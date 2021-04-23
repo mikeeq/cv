@@ -1,8 +1,9 @@
 ---
-language: bash
+language: shell
 
-os:
-  - linux
+arch: amd64
+os: linux
+dist: focal
 
 services:
   - docker
@@ -28,13 +29,38 @@ jobs:
           apk add --no-cache shellcheck bash
           shellcheck ./*.sh
         '
-
     - stage: build_deploy
-      name: "Build Fedora and Deploy to GitHub Releases"
+      name: "Docker Build"
+      script: |
+        docker build -t fedora_tex:latest .
+    - stage: build_deploy
+      name: "ChkTeX"
+      script: |
+        docker run \
+          -t \
+          -v "$(pwd)":/repo \
+          -w /repo \
+          ${DOCKER_IMAGE} \
+          /bin/bash -c "
+            chktex mmiotk-cv.tex
+          "
+    - stage: build_deploy
+      name: "lacheck"
+      script: |
+        docker run \
+          -t \
+          -v "$(pwd)":/repo \
+          -w /repo \
+          ${DOCKER_IMAGE} \
+          /bin/bash -c "
+            lacheck mmiotk-cv.tex
+          "
+    - stage: build_deploy
+      name: "Build PDF and Deploy to GitHub Releases"
       script: ./build_in_docker.sh
       deploy:
         provider: releases
-        api_key: "$GITHUB_TOKEN"
+        token: "$GITHUB_TOKEN"
         file_glob: true
         file: "results/*.pdf"
         skip_cleanup: true

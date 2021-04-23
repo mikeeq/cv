@@ -2,7 +2,7 @@
 
 set -eu -o pipefail
 
-DOCKER_IMAGE=fedora_tex:33
+DOCKER_IMAGE=fedora_tex:latest
 
 if ! docker images --format "{{.Repository}}:{{.Tag}}" | grep -q ${DOCKER_IMAGE}; then
   docker build -t ${DOCKER_IMAGE} .
@@ -16,8 +16,7 @@ docker run \
   -w /repo \
   ${DOCKER_IMAGE} \
   /bin/bash -c "
-    pdflatex -output-directory=results mmiotk-cv.tex \
-    && chown -R $UID:$UID results
+    pdflatex -output-directory=results mmiotk-cv.tex
   "
 
 # ChkTeX and lacheck
