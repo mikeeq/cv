@@ -1,8 +1,5 @@
-## Personal info
-userSecrets.nix
-
-## Nix result dir
-result
+## Results
+results
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
