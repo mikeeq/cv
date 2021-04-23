@@ -30,32 +30,6 @@ jobs:
           shellcheck ./*.sh
         '
     - stage: build_deploy
-      name: "Docker Build"
-      script: |
-        docker build -t fedora_tex:latest .
-    - stage: build_deploy
-      name: "ChkTeX"
-      script: |
-        docker run \
-          -t \
-          -v "$(pwd)":/repo \
-          -w /repo \
-          ${DOCKER_IMAGE} \
-          /bin/bash -c "
-            chktex mmiotk-cv.tex
-          "
-    - stage: build_deploy
-      name: "lacheck"
-      script: |
-        docker run \
-          -t \
-          -v "$(pwd)":/repo \
-          -w /repo \
-          ${DOCKER_IMAGE} \
-          /bin/bash -c "
-            lacheck mmiotk-cv.tex
-          "
-    - stage: build_deploy
       name: "Build PDF and Deploy to GitHub Releases"
       script: ./build_in_docker.sh
       deploy:
