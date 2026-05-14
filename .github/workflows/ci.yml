@@ -9,41 +9,35 @@ on:
       - main
 
 jobs:
-  tests:
+  static-analysis:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v2
-      - name: "YamlLint"
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v6
+      - name: Install mise
         run: |
-          docker run \
-            --rm \
-            -w /repo \
-            -v $(pwd):/repo \
-            -t \
-            alpine:latest /bin/sh -c " \
-              apk add --no-cache py-pip python3 bash \
-              && pip3 install --break-system-packages yamllint \
-              && yamllint -s . \
-            "
-      - name: "ShellCheck"
+          curl https://mise.run | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/share/mise/shims" >> "$GITHUB_PATH"
+      - name: Install mise tools
         run: |
-          docker run \
-            --rm \
-            -w /repo \
-            -v $(pwd):/repo \
-            -t \
-            alpine:latest /bin/sh -c " \
-              apk add --no-cache shellcheck bash \
-              && shellcheck $(find . -type f -name "*.sh" |  tr '\n' ' ')
-            "
+          mise install
+      - name: Install pre-commit hooks
+        run: pre-commit install --install-hooks
+      - name: Run pre-commit
+        run: pre-commit run --all-files --show-diff-on-failure --color=always
+
   build-cv:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: "Build CV"
         run: ./build_in_docker.sh
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           tag_name: ${{ github.ref }}

@@ -89,7 +89,7 @@
 
 %----------------------------------------------------------------------------------------
 %	GRAPHICS DEFINITIONS
-%---------------------------------------------------------------------------------------- 
+%----------------------------------------------------------------------------------------
 
 \usepackage{tikz} % Required for creating the plots
 \usetikzlibrary{shapes, backgrounds}
@@ -104,7 +104,7 @@
 
 %----------------------------------------------------------------------------------------
 %	CHARTS
-%---------------------------------------------------------------------------------------- 
+%----------------------------------------------------------------------------------------
 
 \newcounter{barcount}
 
@@ -112,23 +112,23 @@
 \newenvironment{barchart}[1]{ % The only parameter is the maximum bar width, in cm
 	\newcommand{\barwidth}{0.35}
 	\newcommand{\barsep}{0.2}
-	
+
 	% Command to add a bar to the bar chart
 	\newcommand{\baritem}[2]{ % The first argument is the bar label and the second is the percentage the current bar should take up of the total width
 		\pgfmathparse{##2}
 		\let\perc\pgfmathresult
-		
+
 		\pgfmathparse{#1}
 		\let\barsize\pgfmathresult
-		
+
 		\pgfmathparse{\barsize*##2/100}
 		\let\barone\pgfmathresult
-		
+
 		\pgfmathparse{(\barwidth*\thebarcount)+(\barsep*\thebarcount)}
 		\let\barx\pgfmathresult
-		
+
 		\filldraw[fill=black, draw=none] (0,-\barx) rectangle (\barone,-\barx-\barwidth);
-		
+
 		\node [label=180:\colorbox{black}{\textcolor{white}{##1}}] at (0,-\barx-0.175) {};
 		\addtocounter{barcount}{1}
 	}
@@ -144,13 +144,13 @@
 \newcounter{b}
 \newcounter{c}
 
-% Command to output a number of automatically-sized bubbles from a 
+% Command to output a number of automatically-sized bubbles from a
 % string in the format of '<size>/<label>', e.g. \bubbles{5/Eclipse, 6/git, 4/Office, 3/Inkscape, 3/Blender}
 \newcommand{\bubbles}[1]{
 	% Reset counters
 	\setcounter{a}{0}
 	\setcounter{c}{150}
-	
+
 	\begin{tikzpicture}[scale=3]
 		\foreach \p/\t in {#1} {
 			\addtocounter{a}{1}
